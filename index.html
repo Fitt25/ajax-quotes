@@ -2,13 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AJAX with PHP</title>
+  <title>AJAX Quotes</title>
 </head>
 <body>
-  <h1>AJAX Test</h1>
-  <button id="fetchData">Fetch Data</button>
-  <div id="result"></div>
+  <h1>AJAX Quotes</h1>
+  <div id="quote-container">Quote goes here</div>
+  <p id="explanation">
+    This project is a quote generator that updates automatically using JavaScript and AJAX. Every few seconds, a new inspirational quote is pulled from a local PHP file and displayed on the page without needing to refresh. I added a soft fade-in animation to make the experience feel smoother and more enjoyable. <br><br>
+    The quotes also cycle through different Google fonts to give each one a unique look. This helped me practice working with the DOM, timing functions, and styling elements dynamically with JavaScript and CSS. <br><br>
+    This assignment was a fun way to bring together creativity and logic, and it helped me get more comfortable using AJAX to update content in real-time.
+  </p>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tulpen+One&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Qwitcher+Grypen:wght@700&display=swap');
 
-  <script src="script.js"></script>
+    #quote-container {
+        display: block;
+        text-shadow: 4px 4px 4px #aaa;
+        font-size: 3em;
+    }
+    #explanation {
+      font-size: 1.2em; 
+      margin-top: 20px;
+    }
+    /* CSS for the fade-in animation */
+    .fade-in {
+        animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+  </style> 
+  <script>
+    var counter = 0;
+    function getRandomQuote(){
+
+      var fonts = ["Qwitcher Grypen", "Tulpen One", "Shadows Into Light"];
+      //alert("Can you see this?")
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'random_quotes.php', true);
+
+      xhr.onload = function(){
+        
+        //code to run on return of data
+        if(xhr.status == 200){//data is good, show it!
+          //document.querySelector("#quote-container").innerText = xhr.responseText;
+
+          let el = document.querySelector("#quote-container");
+          el.innerText = xhr.responseText; //adds text
+          el.style.display="block";
+          el.style.fontFamily = fonts[counter];
+          el.classList.add("fade-in");
+          counter++;
+          if (counter>= fonts.length){//reset counter
+            counter = 0;
+          }
+          setTimeout(function(){
+            el.classList.remove("fade-in");
+          },1000);
+
+        }else{//not good?
+          alert("No good data returned");
+        }
+      };
+
+      xhr.onerror = function(){
+        //code to run on error
+        alert("AJAX Error")
+      };
+
+      xhr.send();
+
+    }
+
+    function displayRandomQuote(){
+        //will load quote on page load and at intervals
+
+        //run on initial page load
+        getRandomQuote();
+
+        setInterval(getRandomQuote,5000);
+    }
+
+    //wil run on page load, then every 5 seconds
+    displayRandomQuote();
+
+  </script>
 </body>
 </html>
